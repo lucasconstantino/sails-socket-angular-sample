@@ -1,11 +1,14 @@
 [
   {
-    "name": "Instalar AngularJS"
+    "name": "Instalar AngularJS",
+    "done": true
   },
   {
-    "name": "Instalar angular-sails-bind"
+    "name": "Instalar angular-sails-bind",
+    "done": false
   },
   {
-    "name": "Criar TODO app simples"
+    "name": "Criar TODO app simples",
+    "done": false
   }
 ]
