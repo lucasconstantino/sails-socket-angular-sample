@@ -8,7 +8,8 @@
 module.exports = {
 
   attributes: {
-    name: 'string'
+    name: 'string',
+    done: 'boolean'
   }
 };
 
