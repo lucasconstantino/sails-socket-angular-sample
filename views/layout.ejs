@@ -2,9 +2,62 @@
 <html>
   <head>
     <title>New Sails App</title>
+
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
+
+    <style>
+      body {
+        margin: 50px;
+      }
+      [ng-controller="TodoController"] {
+        max-width: 600px;
+      }
+    </style>
   </head>
 
-  <body>
+  <body ng-app="socket-app">
+
+    <div class="container" ng-controller="TodoController">
+      <div class="jumbotron">
+        <h1>Todo</h1>
+        <form class="form-horizontal" ng-submit="addTask(name)">
+          <div class="input-group">
+            <input class="form-control" id="new-task" placeholder="Nova tarefa" ng-model="name">
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="submit">
+                <i class="glyphicon glyphicon-plus"></i>
+              </button>
+            </span>
+          </div>
+        </form>
+        <hr>
+        <ul class="list-group">
+          <li class="list-group-item" ng-repeat="task in tasks">
+            {{task.name}}
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/angular-sails-bind/dist/angular-sails-bind.js"></script>
+
+    <script type="text/javascript">
+      angular.module('socket-app', ['ngSailsBind'])
+        .controller('TodoController', function ($scope, $sailsBind) {
+
+          /**
+           * Add a task to the list.
+           */
+          $scope.addTask = function (name) {
+            $scope.tasks.push({
+              name: name
+            });
+          }
+
+          $sailsBind.bind('task', $scope);
+        });
+    </script>
   </body>
 </html>
