@@ -40,7 +40,7 @@
         <hr>
         <div ng-if="(tasks | filter:{done: false}).length">
           <ul class="list-group">
-            <li class="list-group-item active"><h4>Todo</h4></li>
+            <li class="list-group-item active"><h4>Todo</h4>
             <li class="list-group-item" ng-repeat="task in tasks | filter:{done: false}">
               {{task.name}}
               <button type="button" class="close" ng-click="removeTask($index)">
@@ -56,7 +56,7 @@
         <div ng-if="(tasks | filter:{done: true}).length">
           <hr>
           <ul class="list-group">
-            <li class="list-group-item"><h4>Done</h4></li>
+            <li class="list-group-item"><h4>Done</h4>
             <li class="list-group-item" ng-repeat="task in tasks | filter:{done: true}">
               {{task.name}}
               <button type="button" class="close" ng-click="removeTask($index)">
@@ -84,10 +84,12 @@
            * Add a task to the list.
            */
           $scope.addTask = function (name) {
-            $scope.tasks.push({
-              name: name,
-              done: false
-            });
+            if (name) {
+              $scope.tasks.push({
+                name: name,
+                done: false
+              });
+            }
           };
 
           /**
