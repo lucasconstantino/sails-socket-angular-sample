@@ -27,7 +27,7 @@
     <div class="container" ng-controller="TodoController">
       <div class="jumbotron">
         <h1>Tarefas</h1>
-        <form class="form-horizontal" ng-submit="addTask(name)">
+        <form class="form-horizontal" ng-submit="addTask()">
           <div class="input-group">
             <input class="form-control" id="new-task" placeholder="Nova tarefa" ng-model="name">
             <span class="input-group-btn">
@@ -43,7 +43,7 @@
             <li class="list-group-item active"><h4>Todo</h4>
             <li class="list-group-item" ng-repeat="task in tasks | filter:{done: false}">
               {{task.name}}
-              <button type="button" class="close" ng-click="removeTask($index)">
+              <button type="button" class="close" ng-click="removeTask(task)">
                 <span aria-hidden="true">&times;</span>
                 <span class="sr-only">Close</span>
               </button>
@@ -59,7 +59,7 @@
             <li class="list-group-item"><h4>Done</h4>
             <li class="list-group-item" ng-repeat="task in tasks | filter:{done: true}">
               {{task.name}}
-              <button type="button" class="close" ng-click="removeTask($index)">
+              <button type="button" class="close" ng-click="removeTask(task)">
                 <span aria-hidden="true">&times;</span>
                 <span class="sr-only">Close</span>
               </button>
@@ -80,15 +80,19 @@
       angular.module('socket-app', ['ngSailsBind'])
         .controller('TodoController', function ($scope, $sailsBind) {
 
+          $scope.name = '';
+
           /**
            * Add a task to the list.
            */
-          $scope.addTask = function (name) {
-            if (name) {
+          $scope.addTask = function () {
+            if ($scope.name) {
               $scope.tasks.push({
-                name: name,
+                name: $scope.name,
                 done: false
               });
+
+              $scope.name = '';
             }
           };
 
@@ -109,8 +113,8 @@
           /**
            * Remove task from the list.
            */
-          $scope.removeTask = function (index) {
-            $scope.tasks.splice(index, 1);
+          $scope.removeTask = function (task) {
+            $scope.tasks.splice($scope.tasks.indexOf(task), 1);
           };
 
           $sailsBind.bind('task', $scope);
