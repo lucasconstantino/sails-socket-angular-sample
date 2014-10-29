@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New Sails App</title>
+
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.css">
+
+    <style>
+      body {
+        margin: 50px;
+      }
+      [ng-controller="TodoController"] {
+        max-width: 600px;
+      }
+
+      .done span {
+        line-height: 1.6em;
+        font-size: 0.6em;
+        display: block;
+        margin-right: 0.5em;
+      }
+    </style>
+  </head>
+
+  <body ng-app="socket-app">
+
+    <div class="container" ng-controller="TodoController">
+      <div class="jumbotron">
+        <h1>Tarefas</h1>
+        <form class="form-horizontal" ng-submit="addTask()">
+          <div class="input-group">
+            <input class="form-control" id="new-task" placeholder="Nova tarefa" ng-model="name">
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="submit">
+                <i class="glyphicon glyphicon-plus"></i>
+              </button>
+            </span>
+          </div>
+        </form>
+        <hr>
+        <div ng-if="(tasks | filter:{done: false}).length">
+          <ul class="list-group">
+            <li class="list-group-item active"><h4>Todo</h4>
+            <li class="list-group-item" ng-repeat="task in tasks | filter:{done: false}">
+              {{task.name}}
+              <button type="button" class="close" ng-click="removeTask(task)">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+              </button>
+              <button type="button" class="close done" ng-click="doneTask(task)">
+                <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div ng-if="(tasks | filter:{done: true}).length">
+          <hr>
+          <ul class="list-group">
+            <li class="list-group-item"><h4>Done</h4>
+            <li class="list-group-item" ng-repeat="task in tasks | filter:{done: true}">
+              {{task.name}}
+              <button type="button" class="close" ng-click="removeTask(task)">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+              </button>
+              <button type="button" class="close done" ng-click="undoneTask(task)">
+                <span aria-hidden="true" class="glyphicon glyphicon-share-alt"></span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/bower_components/angular/angular.js"></script>
+    <script src="/bower_components/angular-sails-bind/dist/angular-sails-bind.js"></script>
+
+    <script type="text/javascript">
+      angular.module('socket-app', ['ngSailsBind'])
+        .controller('TodoController', function ($scope, $sailsBind) {
+
+          $scope.name = '';
+
+          /**
+           * Add a task to the list.
+           */
+          $scope.addTask = function () {
+            if ($scope.name) {
+              $scope.tasks.push({
+                name: $scope.name,
+                done: false
+              });
+
+              $scope.name = '';
+            }
+          };
+
+          /**
+           * Mark a task as done.
+           */
+          $scope.doneTask = function (task) {
+            task.done = true;
+          };
+
+          /**
+           * Mark a task as not done.
+           */
+          $scope.undoneTask = function (task) {
+            task.done = false;
+          };
+
+          /**
+           * Remove task from the list.
+           */
+          $scope.removeTask = function (task) {
+            $scope.tasks.splice($scope.tasks.indexOf(task), 1);
+          };
+
+          $sailsBind.bind('task', $scope);
+        });
+    </script>
+  </body>
+</html>
