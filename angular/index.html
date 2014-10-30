@@ -72,52 +72,70 @@
       </div>
     </div>
 
-    <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/bower_components/sails.io.js/dist/sails.io.js"></script>
     <script src="/bower_components/angular/angular.js"></script>
-    <script src="/bower_components/angular-sails-bind/dist/angular-sails-bind.js"></script>
+    <script src="/bower_components/angular-sails/dist/angular-sails.js"></script>
 
-    <script type="text/javascript">
-      angular.module('socket-app', ['ngSailsBind'])
-        .controller('TodoController', function ($scope, $sailsBind) {
+    <script>
+      io.sails.autoConnect = false;
 
-          $scope.name = '';
+      angular.module('socket-app', ['ngSails'])
+        .config(function ($sailsProvider) {
+          $sailsProvider.url = 'http://localhost:1337';
+        })
+        .controller('TodoController', function ($scope, $sails) {
+          $sails.on('connect', function (a,b,c) {
+            $sails.get("/task").success(function (tasks) {
 
-          /**
-           * Add a task to the list.
-           */
-          $scope.addTask = function () {
-            if ($scope.name) {
-              $scope.tasks.push({
-                name: $scope.name,
-                done: false
-              });
-
+              $scope.tasks = tasks;
               $scope.name = '';
-            }
-          };
 
-          /**
-           * Mark a task as done.
-           */
-          $scope.doneTask = function (task) {
-            task.done = true;
-          };
+              /**
+               * Add a task to the list.
+               */
+              $scope.addTask = function () {
+                if ($scope.name) {
+                  $sails.post('/task', {
+                    name: $scope.name,
+                    done: false
+                  }, function (task) { $scope.tasks.push(task); });
 
-          /**
-           * Mark a task as not done.
-           */
-          $scope.undoneTask = function (task) {
-            task.done = false;
-          };
+                  $scope.name = '';
+                }
+              };
 
-          /**
-           * Remove task from the list.
-           */
-          $scope.removeTask = function (task) {
-            $scope.tasks.splice($scope.tasks.indexOf(task), 1);
-          };
+              /**
+               * Mark a task as done.
+               */
+              $scope.doneTask = function (task) {
+                $sails.put('/task/' + task.id, {
+                  done: true
+                }, function (data) { task.done = true; });
+              };
 
-          $sailsBind.bind('task', $scope);
+              /**
+               * Mark a task as not done.
+               */
+              $scope.undoneTask = function (task) {
+                $sails.put('/task/' + task.id, {
+                  done: false
+                }, function (data) { task.done = false; });
+              };
+
+              /**
+               * Remove task from the list.
+               */
+              $scope.removeTask = function (task) {
+                $sails.delete('/task/' + task.id, function () {
+                  $scope.tasks.splice($scope.tasks.indexOf(task), 1);
+                });
+              };
+
+              $sails.on('message', function (a,b,c) {
+                debugger;
+              });
+            });
+          });
         });
     </script>
   </body>
