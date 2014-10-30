@@ -131,8 +131,27 @@
                 });
               };
 
-              $sails.on('message', function (a,b,c) {
-                debugger;
+              // Awnser to other connected users broadcasts.
+              $sails.on('task', function (message) {
+                switch (message.verb) {
+                  case 'created':
+                    $scope.tasks.push(message.data);
+                    break;
+                  case 'updated':
+                    $scope.tasks.forEach(function (task) {
+                      if (task.id === message.id) {
+                        angular.extend(task, message.data);
+                      }
+                    });
+                    break;
+                  case 'destroyed':
+                    $scope.tasks.forEach(function (task, index) {
+                      if (task.id === message.id) {
+                        $scope.tasks.splice(index, 1);
+                      }
+                    });
+                    break;
+                }
               });
             });
           });
